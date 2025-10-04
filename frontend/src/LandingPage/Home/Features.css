@@ -1,0 +1,76 @@
+.container-Features {
+    /* background-color: rgb(236, 231, 242); */
+    margin-top: 5rem;
+    padding: 0 4rem 0 4.5rem;
+}
+
+.row-Features {
+    /* background-color: aquamarine; */
+}
+
+.ecosystem-image {
+    width: 92%;
+    margin-top: 4rem;
+    margin-left: 10px;
+}
+
+.colLeft-Features {
+    /* background-color: blanchedalmond; */
+}
+
+.main-heading {
+    margin-top: 1rem !important;
+    font-weight: 500;
+    font-size: 1.56rem !important;    
+}
+
+.para-features {
+    font-size: 17px !important;
+    color: #666666;
+    font-family: sans-serif;
+    margin-bottom: 35px !important;
+    font-family: sans-serif;
+    line-height: 1.7;
+}
+
+.sub-head-features {
+    font-size: 20px !important;
+    color: #424242;
+}
+
+.anchor-feature {
+    text-decoration: none;
+    color: #387ED1;
+    font-weight: 500;
+    font-size: 1.1rem !important;
+}
+
+.anchor-container-feature {
+    /* background-color: aliceblue; */
+    display: flex;
+    justify-content: center;
+    padding: 10px 30px 10px 0;
+    margin: 30px 0 10px 0;
+}
+
+.arrow1 {
+    margin-right: 2rem;
+}
+
+.row-pressLogos {
+    display: flex;
+    justify-content: center;
+}
+
+.pressLogo {
+    width: 60%;
+    padding: 10px;
+}
+
+.row-pricing-image {
+    margin-top: 2.3rem;
+    /* background-color: aqua; */
+    display: flex;
+    align-items: center;
+}
+

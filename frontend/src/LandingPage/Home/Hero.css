@@ -1,0 +1,23 @@
+.container-hero {
+    /* background-color: aliceblue; */
+}
+
+.row-hero {
+    /* background-color: rgb(233, 224, 212); */
+    display: flexbox;
+    justify-content: center;
+}
+
+.btn-hero {
+    width: 16.5%;
+    border-radius: 3px;
+    font-size: 19.2px;
+    margin-top: 25px;
+    font-weight: 500;
+    background-color: #387ED1;
+}
+
+.heroImage {
+    width: 62%;
+    margin-top: 10px;
+}

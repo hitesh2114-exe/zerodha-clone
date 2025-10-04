@@ -1,0 +1,55 @@
+.Hero-support {
+    background-color: #f6f6f6;
+    width: 100%;
+    height: 13rem;
+}
+
+.support-myTickets {
+    padding-top: 2.0rem;
+    padding-left: 8.2rem;
+}
+
+.myTickets-button {
+    margin-left: 55rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1.2rem 0.5rem 1.2rem;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.searach-button-support {
+    background-color: white;
+}
+
+.search-support {
+    margin-left: 8.3rem;
+}
+
+.input-support {
+    width: 87%;
+    margin-top: 1rem;
+    height: 3.5rem;
+    border-top: 1px solid #dedede;
+    border-bottom: 1px solid #dedede;
+    border-right: 1px solid #dedede;
+    border-left: 1px solid white;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.searach-button-support {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-left: 1px solid #dedede;
+    border-top: 1px solid #dedede;
+    border-bottom: 1px solid #dedede;
+    border-right: 1px solid white;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    color: grey;
+}
+
+.input-support::placeholder {
+    font-size: 1.08rem;
+    color: #a7a7a8;
+}

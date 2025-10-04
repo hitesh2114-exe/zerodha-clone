@@ -1,0 +1,16 @@
+.SUN {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    padding-left: 5rem;
+    margin-top: 2rem;
+}
+
+.SUN-comp {
+    margin-bottom: 1rem;
+}
+
+.login-box {
+    margin-top: 3rem;
+    padding-left: 33.3%;
+}

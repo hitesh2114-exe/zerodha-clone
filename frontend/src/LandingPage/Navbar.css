@@ -1,0 +1,12 @@
+.nav-item {
+    margin-right: 1.6rem;
+}
+
+.nav-item-container {
+    margin-right: 13rem;
+}
+
+.navBar {
+    position: fixed !important;
+    top: 0 !important;
+}

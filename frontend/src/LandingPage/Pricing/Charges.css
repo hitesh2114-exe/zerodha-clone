@@ -1,0 +1,13 @@
+.text-charges {
+    padding: 0.8rem;
+    font-size: 0.97rem;
+}
+
+.text-price {
+    padding-left: 32rem;
+    padding-right: 7rem;
+}
+
+.charge-table {
+    border: 0.5px solid #E8E8E8;
+}
