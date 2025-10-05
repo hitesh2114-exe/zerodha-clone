@@ -8,7 +8,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      window.location.href = "https://zerodha-clone-1.onrender.com"; // your login app
+      window.location.href = "https://zerodha-clone-4-mk1z.onrender.com"; // your login app
       return;
     }
 
