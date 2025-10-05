@@ -20,7 +20,7 @@ function Login() {
       const res = await axios.post("https://zerodha-clone-3-t58v.onrender.com/login", formData);
       if (res.status === 200) {
         // Redirect to App 2
-        window.location.href = "http://localhost:5174/";
+        window.location.href = "https://zerodha-clone-5-aris.onrender.com";
       }
       setFormData({ username: "", email: "" });
     } catch (e) {
