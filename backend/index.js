@@ -15,6 +15,8 @@ const LocalStrategy = require("passport-local");
 const { UserModel } = require("./models/UserModel.js");
 const session = require("express-session");
 // const cookieparser = {}
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.JWT_SECRET;
 
 const uri = process.env.MONGO_URL;
 
@@ -44,7 +46,13 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://zerodha-clone-4-xyz.onrender.com", // frontend
+    "https://zerodha-clone-5-aris.onrender.com"  // dashboard
+  ],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 //feeding the predefined data to the DB
@@ -261,10 +269,29 @@ app.post("/login", (req, res, next) => {
     }
     req.logIn(user, (err) => {
       if (err) return next(err);
+      // ✅ Create JWT token
+      const token = jwt.sign(
+        { id: user.id, username: user.username },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
       // Login successful
       return res.status(200).json({ message: "Login successful" });
     });
   })(req, res, next);
+});
+
+app.get("/dashboard", (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: "No token provided" });
+
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+
+    // ✅ Token is valid
+    res.status(200).json({ user: { id: decoded.id, username: decoded.username } });
+  });
 });
 
 app.get("/allHoldings", async (req, res) => {
@@ -291,14 +318,13 @@ app.post("/newOrder", async (req, res) => {
   res.send("Order saved");
 });
 
-app.get('/auth/check', (req, res) => {
+app.get("/auth/check", (req, res) => {
   if (req.isAuthenticated()) {
     res.json({ user: req.user });
   } else {
-    res.status(401).json({ message: 'Not authenticated' });
+    res.status(401).json({ message: "Not authenticated" });
   }
 });
-
 
 app.get("/logout", (req, res, next) => {
   req.logout((err) => {
