@@ -42,18 +42,22 @@ passport.deserializeUser(UserModel.deserializeUser());
 
 mongoose.connect(uri).then(() => console.log("Connected!"));
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
 app.use(cors({
   origin: [
     "https://zerodha-clone-4-xyz.onrender.com", // frontend
     "https://zerodha-clone-5-aris.onrender.com"  // dashboard
   ],
-  credentials: true
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(bodyParser.json());
+
+app.options("*", cors());
+
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 //feeding the predefined data to the DB
 // app.get('/addHoldings', async (req, res) => {    //for holdings
