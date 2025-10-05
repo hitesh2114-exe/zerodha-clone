@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-const port = 8080;
+const port = process.env.PORT || 8080;
 const { HoldingsModel } = require("./models/HoldingsModels.js");
 const { PositionModel } = require("./models/PositionModels.js");
 const { OrderModel } = require("./models/OrderModels.js");
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 //session details
 app.use(
   session({
-    secret: process.env.SECRETE,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
   })
@@ -276,7 +276,7 @@ app.post("/login", (req, res, next) => {
         { expiresIn: "1h" }
       );
       // Login successful
-      return res.status(200).json({ message: "Login successful" });
+      return res.status(200).json({ message: "Login successful", token });
     });
   })(req, res, next);
 });
