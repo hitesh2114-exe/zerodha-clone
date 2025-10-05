@@ -21,13 +21,15 @@ function Login() {
         "https://zerodha-clone-3-t58v.onrender.com/login",
         formData
       );
+      console.log("Login response:", res.data);
       if (res.status === 200) {
         const token = res.data.token;
         localStorage.setItem("authToken", token);
         window.location.href = "https://zerodha-clone-5-aris.onrender.com";
       }
-      setFormData({ username: "", email: "" });
+      setFormData({ username: "", password: "" });
     } catch (e) {
+      console.log("Login error:", e.response?.data || e.message);
       if (e.response && e.response.status === 401) {
         setMessage("Invalid Credentials");
       } else {
@@ -50,13 +52,13 @@ function Login() {
           <div style={{ marginTop: "5rem" }}>
             <h2 style={{ marginBottom: "2rem" }}>Signin</h2>
             <form onSubmit={handleSubmit} className="Login-form">
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">
+              <div className="input-group mb-3">
+                <span className="input-group-text" id="basic-addon1">
                   @
                 </span>
                 <input
                   type="text"
-                  class="form-control"
+                  className="form-control"
                   name="username"
                   placeholder="Username"
                   aria-label="Username"
@@ -69,7 +71,7 @@ function Login() {
               <div class="input-group mb-3">
                 <input
                   type="password"
-                  class="form-control"
+                  className="form-control"
                   name="password"
                   placeholder="Password"
                   aria-label="password"
