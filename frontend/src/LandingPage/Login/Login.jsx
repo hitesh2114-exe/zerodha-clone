@@ -17,9 +17,13 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://zerodha-clone-3-t58v.onrender.com/login", formData);
+      const res = await axios.post(
+        "https://zerodha-clone-3-t58v.onrender.com/login",
+        formData
+      );
       if (res.status === 200) {
-        // Redirect to App 2
+        const token = res.data.token;
+        localStorage.setItem("authToken", token);
         window.location.href = "https://zerodha-clone-5-aris.onrender.com";
       }
       setFormData({ username: "", email: "" });
@@ -44,37 +48,36 @@ function Login() {
         </div>
         <div className="col" style={{ marginLeft: "5rem" }}>
           <div style={{ marginTop: "5rem" }}>
-            <h2 style={{marginBottom : "2rem"}}>Signin</h2>
+            <h2 style={{ marginBottom: "2rem" }}>Signin</h2>
             <form onSubmit={handleSubmit} className="Login-form">
+              <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">
+                  @
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="username"
+                  placeholder="Username"
+                  aria-label="Username"
+                  aria-describedby="basic-addon1"
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+              </div>
 
               <div class="input-group mb-3">
-              <span class="input-group-text" id="basic-addon1">
-                @
-              </span>
-              <input
-                type="text"
-                class="form-control"
-                name="username"
-                placeholder="Username"
-                aria-label="Username"
-                aria-describedby="basic-addon1"
-                value={formData.username}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div class="input-group mb-3">
-              <input
-                type="password"
-                class="form-control"
-                name="password"
-                placeholder="Password"
-                aria-label="password"
-                aria-describedby="basic-addon1"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="password"
+                  placeholder="Password"
+                  aria-label="password"
+                  aria-describedby="basic-addon1"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
 
               {/* <input
                 className="Login-element"
@@ -92,7 +95,9 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
               /> */}
-              <button type="submit" class="btn btn-outline-primary">Sign in</button>
+              <button type="submit" class="btn btn-outline-primary">
+                Sign in
+              </button>
               {/* <button type="submit">sign in</button> */}
             </form>
             {message && <p style={{ marginTop: "10px" }}>{message}</p>}
