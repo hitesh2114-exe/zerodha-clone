@@ -21,8 +21,8 @@ function SignUpNow() {
     e.preventDefault();
     try {
       await axios
-        .post("http://localhost:8080/signup", formData);
-        window.location.href = 'http://localhost:5174/';
+        .post("https://zerodha-clone-3-t58v.onrender.com/signup", formData);
+        window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
       setMessage("✅ Registration successful!");
       setFormData({ username: "", email: "", password: "" });
     } catch (error) {
