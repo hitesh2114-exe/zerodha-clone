@@ -10,7 +10,7 @@ function Logout() {
       await axios.get("/logout", {
         withCredentials: true, // 🔑 ensures cookies are sent
       });
-      window.location.href = 'http://localhost:5173/';
+      window.location.href = 'https://zerodha-clone-4-mk1z.onrender.com';
     } catch (error) {
       console.error("Logout failed:", error);
     }

@@ -17,7 +17,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8080/login", formData);
+      const res = await axios.post("https://zerodha-clone-3-t58v.onrender.com/login", formData);
       if (res.status === 200) {
         // Redirect to App 2
         window.location.href = "http://localhost:5174/";

@@ -9,13 +9,13 @@ const Holdings = () => {
   const [allOrders, setAllOrders] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/allHoldings").then((res) => {
+    axios.get("https://zerodha-clone-3-t58v.onrender.com/allHoldings").then((res) => {
       setAllHoldings(res.data);
     });
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/allOrders").then((res) => {
+    axios.get("https://zerodha-clone-3-t58v.onrender.com/allOrders").then((res) => {
       setAllOrders(res.data);
     });
   });

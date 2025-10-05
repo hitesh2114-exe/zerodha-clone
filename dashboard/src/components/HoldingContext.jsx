@@ -16,7 +16,7 @@ export const HoldingProvider = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/allHoldings")
+      .get("https://zerodha-clone-3-t58v.onrender.com/allHoldings")
       .then((res) => setAllHoldings(res.data))
       .catch((err) => console.error("Fetch error:", err));
   }, []);
@@ -49,7 +49,7 @@ export const HoldingProvider = ({ children }) => {
   //for Orders
   useEffect(() => {
     axios
-      .get("http://localhost:8080/allOrders")
+      .get("https://zerodha-clone-3-t58v.onrender.com/allOrders")
       .then((res) => setAllOrders(res.data))
       .catch((err) => console.error("Fetch error:", err));
   }, []);
