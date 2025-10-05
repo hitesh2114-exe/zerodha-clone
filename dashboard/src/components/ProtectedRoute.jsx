@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate("/login");
+      window.location.href = "https://zerodha-clone-1.onrender.com"; // your login app
       return;
     }
 
     axios
-      .get("https://zerodha-clone-3-t58v.onrender.com/dashboard", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      .get("https://zerodha-clone-3-t58v.onrender.com/verify", {
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => {
+      .then(() => {
         setAuthenticated(true);
         setLoading(false);
       })
       .catch(() => {
-        navigate("/login");
+        window.location.href = "https://zerodha-clone-1.onrender.com"; // redirect if token invalid
       });
-  }, [navigate]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (!authenticated) return null;
