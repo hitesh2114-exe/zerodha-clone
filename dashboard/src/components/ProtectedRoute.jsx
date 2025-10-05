@@ -21,7 +21,7 @@ function ProtectedRoute({ children }) {
         setLoading(false);
       })
       .catch(() => {
-        window.location.href = "https://zerodha-clone-1.onrender.com"; // redirect if token invalid
+        window.location.href = "https://zerodha-clone-4-mk1z.onrender.com"; // redirect if token invalid
       });
   }, []);
 
