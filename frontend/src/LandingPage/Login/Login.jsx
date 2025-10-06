@@ -21,8 +21,8 @@ function Login() {
     try {
       const res = await axios.post(
         "https://zerodha-clone-3-t58v.onrender.com/login",
-        formData,
-        { withCredentials: true }
+        formData
+        // { withCredentials: true }
       );
       console.log("Login response:", res.data);
       if (res.status === 200) {
@@ -72,7 +72,7 @@ function Login() {
                 />
               </div>
 
-              <div class="input-group mb-3">
+              <div className="input-group mb-3">
                 <input
                   type="password"
                   className="form-control"
@@ -101,12 +101,17 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
               /> */}
-              <button type="submit" class="btn btn-outline-primary">
+              <button type="submit" className="btn btn-outline-primary">
                 Sign in
               </button>
               {/* <button type="submit">sign in</button> */}
             </form>
-            {message && <p style={{ marginTop: "10px" }}>{message}</p>}
+            {message && (
+              <div className="alert alert-danger mt-3" role="alert">
+                {message}
+              </div>
+            )}
+
             {loading && <p>Loading...</p>}
           </div>
         </div>

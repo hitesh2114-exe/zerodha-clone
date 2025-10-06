@@ -20,10 +20,13 @@ function SignUpNow() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios
-        .post("https://zerodha-clone-3-t58v.onrender.com/signup", formData);
-        window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
-      setMessage("✅ Registration successful!");
+      const res = await axios.post(
+        "https://zerodha-clone-3-t58v.onrender.com/signup",
+        formData
+      );
+      const token = res.data.token;
+      localStorage.setItem("authToken", token);
+      window.location.href = "https://zerodha-clone-5-aris.onrender.com";
       setFormData({ username: "", email: "", password: "" });
     } catch (error) {
       if (error.response && error.response.status === 409) {
@@ -55,7 +58,7 @@ function SignUpNow() {
               </span>
               <input
                 type="text"
-                class="form-control"
+                className="form-control"
                 name="username"
                 placeholder="Username"
                 aria-label="Username"
@@ -69,7 +72,7 @@ function SignUpNow() {
               <input
                 type="email"
                 name="email"
-                class="form-control"
+                className="form-control"
                 placeholder="Email Id"
                 aria-label="Username"
                 aria-describedby="basic-addon1"
@@ -82,7 +85,7 @@ function SignUpNow() {
               <input
                 type="password"
                 name="password"
-                class="form-control"
+                className="form-control"
                 placeholder="Password"
                 aria-label="Username"
                 aria-describedby="basic-addon1"
@@ -115,7 +118,7 @@ function SignUpNow() {
               value={formData.password}
               onChange={handleChange}
             /> */}
-            <button class="btn btn-outline-primary" type="submit">
+            <button className="btn btn-outline-primary" type="submit">
               Register
             </button>
           </form>
@@ -130,7 +133,7 @@ function SignUpNow() {
         <Link to={"/login"} style={{ marginLeft: "3rem", marginTop: "2rem" }}>
           <button
             type="button"
-            class="btn btn-primary"
+            className="btn btn-primary"
             style={{ padding: "0.5rem 8rem 0.5rem 8rem", fontWeight: "600" }}
           >
             Sign in
