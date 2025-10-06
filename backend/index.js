@@ -10,13 +10,14 @@ const { PositionModel } = require("./models/PositionModels.js");
 const { OrderModel } = require("./models/OrderModels.js");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
+// const passport = require("passport");
+// const LocalStrategy = require("passport-local");
 const { UserModel } = require("./models/UserModel.js");
-const session = require("express-session");
+// const session = require("express-session");
 // const cookieparser = {}
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET;
+const bcrypt = require("bcrypt");
 
 const uri = process.env.MONGO_URL;
 
@@ -24,33 +25,34 @@ app.set("views", path.join(__dirname, "/views"));
 app.use(express.urlencoded({ extended: true }));
 
 //session details
-app.use(
-  session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
+// app.use(
+//   session({
+//     secret: process.env.SECRET,
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
 //passport authentication
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(UserModel.authenticate()));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passport.use(new LocalStrategy(UserModel.authenticate()));
 
-passport.serializeUser(UserModel.serializeUser());
-passport.deserializeUser(UserModel.deserializeUser());
+// passport.serializeUser(UserModel.serializeUser());
+// passport.deserializeUser(UserModel.deserializeUser());
 
 mongoose.connect(uri).then(() => console.log("Connected!"));
 
-app.use(cors({
-  origin: [
-    "https://zerodha-clone-4-mk1z.onrender.com",
-    "https://zerodha-clone-5-aris.onrender.com"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // ✅ Add this
-}));
+app.use(
+  cors({
+    origin: [
+      "https://zerodha-clone-4-mk1z.onrender.com",
+      "https://zerodha-clone-5-aris.onrender.com",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // ✅ Add this
+  })
+);
 
 app.use(bodyParser.json());
 
@@ -233,6 +235,19 @@ app.get("/", (req, res) => {
 //   res.send(registeredUser);
 // });
 
+function verifyToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token provided" });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(403).json({ message: "Invalid token" });
+  }
+}
+
 app.get("/verify", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
@@ -246,67 +261,53 @@ app.get("/verify", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  let { username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
-  const existingUser = await UserModel.findOne({ email }); // or username
+  const existingUser = await UserModel.findOne({ email });
   if (existingUser) {
-    return res.status(409).send({ message: "User already exists" });
-  } else {
-    try {
-      let user = new UserModel({
-        email: email,
-        username: username,
-      });
+    return res.status(409).json({ message: "User already exists" });
+  }
 
-      let registeredUser = await UserModel.register(user, password);
-      req.login(registeredUser, (err) => {
-        if (err) {
-          return res.status(500).send({ message: "Login after signup failed" });
-        }
-        res.send({
-          message: "Signup and login successful",
-          user: registeredUser,
-        });
-      });
-    } catch (e) {
-      console.error("Signup error:", e);
-      res.status(500).send({ message: "Signup failed" });
-    }
+  try {
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = new UserModel({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    await newUser.save();
+
+    const token = jwt.sign(
+      { id: newUser._id, username: newUser.username },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+    res.status(201).json({ message: "Signup successful", token });
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ message: "Signup failed" });
   }
 });
 
-app.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) {
-      // Login failed
-      return res.status(401).json({ message: "Invalid Credentials" });
-    }
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      // ✅ Create JWT token
-      const token = jwt.sign(
-        { id: user.id, username: user.username },
-        SECRET_KEY,
-        { expiresIn: "1h" }
-      );
-      // Login successful
-      return res.status(200).json({ message: "Login successful", token });
-    });
-  })(req, res, next);
+app.post("/login", async (req, res, next) => {
+  const { username, password } = req.body;
+
+  const user = await UserModel.findOne({ username });
+  if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) return res.status(401).json({ message: "Invalid credentials" });
+
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    SECRET_KEY,
+    { expiresIn: "1h" }
+  );
+  res.status(200).json({ message: "Login successful", token });
 });
 
-app.get("/dashboard", (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "No token provided" });
-
-  const token = authHeader.split(" ")[1];
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-
-    // ✅ Token is valid
-    res.status(200).json({ user: { id: decoded.id, username: decoded.username } });
-  });
+app.get("/dashboard", verifyToken, (req, res) => {
+  res.status(200).json({ user: req.user });
 });
 
 app.get("/allHoldings", async (req, res) => {
@@ -333,25 +334,25 @@ app.post("/newOrder", async (req, res) => {
   res.send("Order saved");
 });
 
-app.get("/auth/check", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json({ user: req.user });
-  } else {
-    res.status(401).json({ message: "Not authenticated" });
-  }
-});
+// app.get("/auth/check", (req, res) => {
+//   if (req.isAuthenticated()) {
+//     res.json({ user: req.user });
+//   } else {
+//     res.status(401).json({ message: "Not authenticated" });
+//   }
+// });
 
-app.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Logout failed" });
-    }
-    req.session.destroy(() => {
-      res.clearCookie("connect.sid"); // if you're using express-session
-      res.redirect("/"); // Redirect to home page
-    });
-  });
-});
+// app.get("/logout", (req, res, next) => {
+//   req.logout((err) => {
+//     if (err) {
+//       return res.status(500).json({ message: "Logout failed" });
+//     }
+//     req.session.destroy(() => {
+//       res.clearCookie("connect.sid"); // if you're using express-session
+//       res.redirect("/"); // Redirect to home page
+//     });
+//   });
+// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
