@@ -289,21 +289,27 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res, next) => {
-  const { username, password } = req.body;
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  const user = await UserModel.findOne({ username });
-  if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    const user = await UserModel.findOne({ username });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) return res.status(401).json({ message: "Invalid credentials" });
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) return res.status(401).json({ message: "Invalid credentials" });
 
-  const token = jwt.sign(
-    { id: user._id, username: user.username },
-    SECRET_KEY,
-    { expiresIn: "1h" }
-  );
-  res.status(200).json({ message: "Login successful", token });
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Login successful", token });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 app.get("/dashboard", verifyToken, (req, res) => {
