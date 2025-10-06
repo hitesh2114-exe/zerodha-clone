@@ -357,17 +357,16 @@ app.post("/newOrder", async (req, res) => {
 //   }
 // });
 
-// app.get("/logout", (req, res, next) => {
-//   req.logout((err) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Logout failed" });
-//     }
-//     req.session.destroy(() => {
-//       res.clearCookie("connect.sid"); // if you're using express-session
-//       res.redirect("/"); // Redirect to home page
-//     });
-//   });
-// });
+app.get("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Logout failed" });
+    }
+    req.session.destroy(() => {
+      window.location.href = "https://zerodha-clone-4-mk1z.onrender.com";
+    });
+  });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

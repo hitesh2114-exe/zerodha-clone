@@ -70,7 +70,7 @@ export const HoldingProvider = ({ children }) => {
           .toFixed(2)
       : "0.00";
 
-    setOrdersLTP(parseFloat(orderstotalLTP));
+    setOrdersLTP(orderstotalLTP);
   }, [allOrders]);
 
   //for P&L
