@@ -44,13 +44,13 @@ mongoose.connect(uri).then(() => console.log("Connected!"));
 
 app.use(cors({
   origin: [
-    "https://zerodha-clone-4-mk1z.onrender.com", // ✅ your actual frontend
-    "https://zerodha-clone-5-aris.onrender.com"  // dashboard if needed
+    "https://zerodha-clone-4-mk1z.onrender.com",
+    "https://zerodha-clone-5-aris.onrender.com"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true // ✅ Add this
 }));
-
 
 app.use(bodyParser.json());
 

@@ -7,6 +7,7 @@ function Login() {
     username: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,10 +17,12 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await axios.post(
         "https://zerodha-clone-3-t58v.onrender.com/login",
-        formData
+        formData,
+        { withCredentials: true }
       );
       console.log("Login response:", res.data);
       if (res.status === 200) {
@@ -36,6 +39,7 @@ function Login() {
         setMessage("Something went wrong. Please try again.");
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -103,6 +107,7 @@ function Login() {
               {/* <button type="submit">sign in</button> */}
             </form>
             {message && <p style={{ marginTop: "10px" }}>{message}</p>}
+            {loading && <p>Loading...</p>}
           </div>
         </div>
       </div>
