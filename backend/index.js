@@ -273,7 +273,7 @@ app.post("/signup", async (req, res) => {
     const newUser = new UserModel({
       username,
       email,
-      password: hashedPassword,
+      password: hashedPassword
     });
     await newUser.save();
 
@@ -282,6 +282,7 @@ app.post("/signup", async (req, res) => {
       SECRET_KEY,
       { expiresIn: "1h" }
     );
+
     res.status(201).json({ message: "Signup successful", token });
   } catch (err) {
     console.error("Signup error:", err);
@@ -289,15 +290,23 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+
 app.post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    console.log("Login request body:", req.body);
 
+    const { username, password } = req.body;
     const user = await UserModel.findOne({ username });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(401).json({ message: "Invalid credentials" });
+    if (!isValid) {
+      console.log("Password mismatch");
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
     const token = jwt.sign(
       { id: user._id, username: user.username },
@@ -305,13 +314,13 @@ app.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
+    console.log("Login successful, token created");
     res.status(200).json({ message: "Login successful", token });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 app.get("/dashboard", verifyToken, (req, res) => {
   res.status(200).json({ user: req.user });
 });
