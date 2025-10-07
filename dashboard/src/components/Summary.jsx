@@ -79,10 +79,11 @@ const Summary = () => {
             <p>
               Investment{" "}
               <span>
-                {new Intl.NumberFormat("en-IN", {
+                {/* {new Intl.NumberFormat("en-IN", {
                   style: "currency",
                   currency: "INR",
-                }).format(combinedAvg)}
+                }).format(combinedAvg)} */}
+                1000inr
               </span>{" "}
             </p>
           </div>
