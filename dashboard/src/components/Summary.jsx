@@ -10,7 +10,7 @@ const Summary = () => {
   const { combinedAvg } = useContext(HoldingsContext);
 
   const combinedLTP = parseInt(ordersLTP) + parseInt(totalLTP);
-  const combinedPAndL = parseInt(totalPAndL) + parseInt(ordersPAndL);
+  const combinedPAndL = parseFloat(totalPAndL) + parseFloat(ordersPAndL);
 
   return (
     <>
@@ -56,11 +56,10 @@ const Summary = () => {
         <div className="data">
           <div className="first">
             <h3 className="profit">
-              {/* {new Intl.NumberFormat("en-IN", {
+              {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
-              }).format(combinedPAndL)}{" "} */}
-              10 rupee
+              }).format(combinedPAndL)}{" "}
               <small>+5.20%</small>{" "}
             </h3>
             <p>P&L</p>

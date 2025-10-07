@@ -79,7 +79,7 @@ export const HoldingProvider = ({ children }) => {
     setOrdersPAndL(totalPAndLOrders);
   }, [allOrders]);
 
-  const combinedAvg = parseInt(totalAvgPrice) + parseInt(avgPriceOrders);
+  const combinedAvg = parseFloat(totalAvgPrice) + parseFloat(avgPriceOrders);
 
   return (
     <HoldingsContext.Provider
