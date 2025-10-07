@@ -56,10 +56,11 @@ const Summary = () => {
         <div className="data">
           <div className="first">
             <h3 className="profit">
-              {new Intl.NumberFormat("en-IN", {
+              {/* {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
-              }).format(combinedPAndL)}{" "}
+              }).format(combinedPAndL)}{" "} */}
+              10 rupee
               <small>+5.20%</small>{" "}
             </h3>
             <p>P&L</p>
@@ -79,11 +80,10 @@ const Summary = () => {
             <p>
               Investment{" "}
               <span>
-                {/* {new Intl.NumberFormat("en-IN", {
+                {new Intl.NumberFormat("en-IN", {
                   style: "currency",
                   currency: "INR",
-                }).format(combinedAvg)} */}
-                1000inr
+                }).format(combinedAvg)}
               </span>{" "}
             </p>
           </div>
