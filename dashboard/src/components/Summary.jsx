@@ -31,6 +31,7 @@ const Summary = () => {
                 style: "currency",
                 currency: "INR",
               }).format(combinedLTP)}
+              {console.log(combinedLTP)}
             </h3>
             <p>Margin available</p>
           </div>
@@ -60,6 +61,7 @@ const Summary = () => {
                 style: "currency",
                 currency: "INR",
               }).format(combinedPAndL)}{" "}
+              {console.log(combinedPAndL)}
               <small>+5.20%</small>{" "}
             </h3>
             <p>P&L</p>
