@@ -24,12 +24,23 @@ mongoose.connect(uri).then(() => console.log("Connected!"));
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["https://zerodha-clone-4-mk1z.onrender.com", "https://zerodha-clone-5-aris.onrender.com"],
-    credentials: true,
-  })
-);
+
+const allowedOrigins = [
+  "https://zerodha-clone-4-mk1z.onrender.com",
+  "https://zerodha-clone-5-aris.onrender.com"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
