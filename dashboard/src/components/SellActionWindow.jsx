@@ -13,7 +13,7 @@ function SellActionWindow({ uid, fetchHoldings }) {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:8080/sell",
+        "https://zerodha-clone-3-t58v.onrender.com/sell",
         {
           name: uid,
           qty: Number(stockQuantity),
