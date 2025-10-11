@@ -12,11 +12,6 @@ function SignUp() {
         <div style={{marginTop : "5rem"}}>
             <OpenFreeDemate />
             <SignUpNow />
-            {/* <InvestmentOptions />
-            <Steps />
-            <Benefits />
-            <Explore />
-            <FAQs /> */}
         </div>
     );
 }

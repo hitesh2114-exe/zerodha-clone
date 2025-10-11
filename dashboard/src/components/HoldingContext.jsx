@@ -1,96 +1,60 @@
-import React, { createContext, useState, useEffect, use } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
 export const HoldingsContext = createContext();
 
 export const HoldingProvider = ({ children }) => {
-  const [allHoldings, setAllHoldings] = useState([]);
+  const [holdings, setHoldings] = useState([]);
   const [totalAvgPrice, setTotalAvgPrice] = useState("0.00");
   const [totalLTP, setTotalLTP] = useState("0.00");
   const [totalPAndL, setTotalPAndL] = useState("0.00");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-  const [allOrders, setAllOrders] = useState([]);
-  const [avgPriceOrders, setAvgPriceOrders] = useState("0.0");
-  const [ordersLTP, setOrdersLTP] = useState("0.0");
-  const [ordersPAndL, setOrdersPAndL] = useState("0.0");
+  const lengthHolding = holdings.length;
 
   useEffect(() => {
     axios
-      .get("https://zerodha-clone-3-t58v.onrender.com/allHoldings")
-      .then((res) => setAllHoldings(res.data))
+      .get("http://localhost:8080/holdings", { withCredentials: true })
+      .then((res) => setHoldings(res.data.holdings || []))
       .catch((err) => console.error("Fetch error:", err));
-  }, []);
+  }, [refreshTrigger]);
 
   //avg price
   useEffect(() => {
-    const total = allHoldings.length
-      ? allHoldings.reduce((acc, stock) => acc + (stock.avg || 0), 0).toFixed(2)
+    const total = holdings.length
+      ? holdings
+          .reduce((acc, stock) => acc + (stock.avg || 0) * stock.qty, 0)
+          .toFixed(2)
       : "0.00";
     setTotalAvgPrice(total);
-  }, [allHoldings]);
+  }, [holdings]);
 
   //updating the setTotalLTP of dashboard
   useEffect(() => {
-    const totalLTP = allHoldings.length
-      ? allHoldings
-          .reduce((acc, stock) => acc + (stock.price || 0), 0)
+    const totalLTP = holdings.length
+      ? holdings
+          .reduce((acc, stock) => acc + (stock.price || 0) * stock.qty, 0)
           .toFixed(2)
       : "0.00";
 
     setTotalLTP(totalLTP);
-  }, [allHoldings]);
+  }, [holdings]);
 
   //updating the setTotalPAndL of dashboard
   useEffect(() => {
-    const totalPAndL = totalLTP - totalAvgPrice;
-    setTotalPAndL(totalPAndL);
-  }, [allHoldings]);
-
-  //for Orders
-  useEffect(() => {
-    axios
-      .get("https://zerodha-clone-3-t58v.onrender.com/allOrders")
-      .then((res) => setAllOrders(res.data))
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
-
-  //for avg
-  useEffect(() => {
-    const total = allOrders.length
-      ? allOrders.reduce((acc, stock) => acc + (stock.price || 0), 0).toFixed(2)
-      : "0.00";
-    setAvgPriceOrders(total);
-  }, [allOrders]);
-
-  //for LTP
-  useEffect(() => {
-    const orderstotalLTP = allOrders.length
-      ? allOrders
-          .reduce((acc, stock) => acc + (stock.price + 150.47 || 0), 0)
-          .toFixed(2)
-      : "0.00";
-
-    setOrdersLTP(orderstotalLTP);
-  }, [allOrders]);
-
-  //for P&L
-  useEffect(() => {
-    const totalPAndLOrders = ordersLTP - avgPriceOrders;
-    setOrdersPAndL(totalPAndLOrders);
-  }, [allOrders]);
-
-  const combinedAvg = parseFloat(totalAvgPrice) + parseFloat(avgPriceOrders);
+    const pAndL = (parseFloat(totalLTP) - parseFloat(totalAvgPrice)).toFixed(2);
+    setTotalPAndL(pAndL);
+  }, [totalLTP, totalAvgPrice]);
 
   return (
     <HoldingsContext.Provider
       value={{
-        allHoldings,
         totalLTP,
         totalPAndL,
-        avgPriceOrders,
-        ordersLTP,
-        ordersPAndL,
-        combinedAvg,
+        totalAvgPrice,
+        triggerHoldingsRefresh,
+        lengthHolding
       }}
     >
       {children}

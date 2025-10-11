@@ -134,6 +134,11 @@ const WatchListHover = ({ uid }) => {
     generalContext.openBuyWindow(uid);
   };
 
+  const handleSellClick = () => {
+  generalContext.openSellWindow(uid); 
+};
+
+
   return (
     <span className="actions">
       <span>
@@ -156,6 +161,7 @@ const WatchListHover = ({ uid }) => {
           slots={{
             transition: Grow,
           }}
+          onClick={handleSellClick}
         >
           <button className="sell">Sell</button>
         </Tooltip>

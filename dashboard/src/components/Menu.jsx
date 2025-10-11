@@ -11,9 +11,6 @@ const Menu = () => {
             <Link className="nav-link active" aria-current="page" to={"/"} style={{ color: "#666666" }}>Dashboard</Link>
           </li>
           <li>
-            <Link className="nav-link active" aria-current="page" to={"/orders"} style={{ color: "#666666" }}>Orders</Link>
-          </li>
-          <li>
             <Link className="nav-link active" aria-current="page" to={"/holdings"} style={{ color: "#666666" }}>Holdings</Link>
           </li>
           <li>

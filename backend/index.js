@@ -10,50 +10,26 @@ const { PositionModel } = require("./models/PositionModels.js");
 const { OrderModel } = require("./models/OrderModels.js");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-// const passport = require("passport");
-// const LocalStrategy = require("passport-local");
 const { UserModel } = require("./models/UserModel.js");
-// const session = require("express-session");
-// const cookieparser = {}
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = process.env.JWT_SECRET;
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 const uri = process.env.MONGO_URL;
 
-app.set("views", path.join(__dirname, "/views"));
 app.use(express.urlencoded({ extended: true }));
-
-//session details
-// app.use(
-//   session({
-//     secret: process.env.SECRET,
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
-//passport authentication
-// app.use(passport.initialize());
-// app.use(passport.session());
-// passport.use(new LocalStrategy(UserModel.authenticate()));
-
-// passport.serializeUser(UserModel.serializeUser());
-// passport.deserializeUser(UserModel.deserializeUser());
 
 mongoose.connect(uri).then(() => console.log("Connected!"));
 
+app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "https://zerodha-clone-4-mk1z.onrender.com",
-      "https://zerodha-clone-5-aris.onrender.com",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // ✅ Add this
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    credentials: true,
   })
 );
-
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
@@ -235,94 +211,198 @@ app.get("/", (req, res) => {
 //   res.send(registeredUser);
 // });
 
-function verifyToken(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
-
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
-  }
-}
-
-app.get("/verify", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "No token provided" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.status(200).json({ valid: true });
-  } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
-  }
-});
+//signup route
 
 app.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
-
-  const existingUser = await UserModel.findOne({ email });
-  if (existingUser) {
-    return res.status(409).json({ message: "User already exists" });
-  }
-
   try {
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const { username, password, email } = req.body;
+
+    //check is user already exist
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already taken" });
+    }
+
+    //hashed password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    //create new user
     const newUser = new UserModel({
       username,
+      password: hashedPassword,
       email,
-      password: hashedPassword
+      holdings: [],
     });
+
+    //save the user
     await newUser.save();
-
-    const token = jwt.sign(
-      { id: newUser._id, username: newUser.username },
-      SECRET_KEY,
-      { expiresIn: "1h" }
-    );
-
-    res.status(201).json({ message: "Signup successful", token });
+    res.status(201).json({ message: "Signup successful" });
   } catch (err) {
     console.error("Signup error:", err);
-    res.status(500).json({ message: "Signup failed" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-
+//login route
 app.post("/login", async (req, res) => {
   try {
-    console.log("Login request body:", req.body);
-
     const { username, password } = req.body;
+
+    //check in database
     const user = await UserModel.findOne({ username });
     if (!user) {
-      console.log("User not found");
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "invalid credentials" });
     }
 
+    //compare password
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      console.log("Password mismatch");
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "invalid credentials" });
     }
 
+    //create token
     const token = jwt.sign(
       { id: user._id, username: user.username },
-      SECRET_KEY,
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    console.log("Login successful, token created");
-    res.status(200).json({ message: "Login successful", token });
+    //set token as http-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // true in production with HTTPS
+      sameSite: "None",
+      maxAge: 3600000,
+    });
+
+    res.status(200).json({ message: "Login successful" });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-app.get("/dashboard", verifyToken, (req, res) => {
-  res.status(200).json({ user: req.user });
+
+//logout route
+app.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  });
+  res.status(200).json({ message: "Logout successful" });
+});
+
+//profile checking route
+app.get("/profile", async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.id);
+    res.status(200).json({ username: user.username });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+});
+
+//buy stocks
+function simulatePrice(basePrice) {
+  const changePercent = (Math.random() * 2 - 1) * 0.05; // ±5%
+  const newPrice = basePrice * (1 + changePercent);
+  return parseFloat(newPrice.toFixed(2));
+}
+
+function calculateNet(avg, price, qty) {
+  const netValue = (price - avg) * qty;
+  return (netValue >= 0 ? "+" : "") + netValue.toFixed(2);
+}
+
+function simulateDayChange(price) {
+  const changePercent = (Math.random() * 2 - 1) * 0.03; // ±3%
+  const change = price * changePercent;
+  const previousClose = price - change;
+  const percentChange = ((price - previousClose) / previousClose) * 100;
+  return (percentChange >= 0 ? "+" : "") + percentChange.toFixed(2) + "%";
+}
+
+app.post("/buy", async (req, res) => {
+  const { name, qty, price } = req.body;
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.id);
+    const simulatedPrice = simulatePrice(price);
+    const existing = user.holdings.find((h) => h.name === name);
+
+    if (existing) {
+      const totalQty = existing.qty + qty;
+      const totalCost = existing.avg * existing.qty + simulatedPrice * qty;
+      existing.qty = totalQty;
+      existing.avg = totalCost / totalQty;
+      existing.price = simulatedPrice;
+      existing.net = calculateNet(existing.avg, simulatedPrice, existing.qty);
+      existing.day = simulateDayChange(simulatedPrice);
+    } else {
+      user.holdings.push({
+        name,
+        qty,
+        avg: price,
+        price: simulatedPrice,
+        net: calculateNet(price, simulatedPrice, qty),
+        day: simulateDayChange(simulatedPrice),
+      });
+    }
+    await user.save();
+    res.status(200).json({ message: "Stock purchased" });
+  } catch (err) {
+    res.status(500).json({ message: "Purchase failed" });
+  }
+});
+
+//sell stocks
+app.post("/sell", async (req, res) => {
+  const { name, qty } = req.body;
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.id);
+
+    const holding = user.holdings.find((h) => h.name === name);
+    if (!holding || holding.qty < qty) {
+      return res.status(400).json({ message: "Insufficient shares" });
+    }
+
+    holding.qty -= qty;
+    if (holding.qty === 0) {
+      user.holdings = user.holdings.filter((h) => h.name !== name);
+    }
+
+    await user.save();
+    res.status(200).json({ message: "Stock sold" });
+  } catch (err) {
+    res.status(500).json({ message: "Sell failed" });
+  }
+});
+
+//route to access all holdings
+app.get("/holdings", async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(decoded.id);
+    res.status(200).json({ holdings: user.holdings });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch holdings" });
+  }
 });
 
 app.get("/allHoldings", async (req, res) => {
@@ -347,25 +427,6 @@ app.post("/newOrder", async (req, res) => {
   });
   newOrder.save();
   res.send("Order saved");
-});
-
-// app.get("/auth/check", (req, res) => {
-//   if (req.isAuthenticated()) {
-//     res.json({ user: req.user });
-//   } else {
-//     res.status(401).json({ message: "Not authenticated" });
-//   }
-// });
-
-app.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Logout failed" });
-    }
-    req.session.destroy(() => {
-      window.location.href = "https://zerodha-clone-4-mk1z.onrender.com";
-    });
-  });
 });
 
 app.listen(port, () => {

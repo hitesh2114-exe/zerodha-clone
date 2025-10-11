@@ -1,21 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useContext } from "react";
-import { HoldingsContext } from "./HoldingContext";
+import { HoldingsContext } from "./HoldingContext"
+import axios from "axios";
 
 const Summary = () => {
   const { totalLTP } = useContext(HoldingsContext);
   const { totalPAndL } = useContext(HoldingsContext);
-  const { ordersLTP } = useContext(HoldingsContext);
-  const { ordersPAndL } = useContext(HoldingsContext);
-  const { combinedAvg } = useContext(HoldingsContext);
+  const { totalAvgPrice } = useContext(HoldingsContext);
+  const { lengthHolding } = useContext(HoldingsContext);
 
-  const combinedLTP = parseInt(ordersLTP) + parseInt(totalLTP);
-  const combinedPAndL = parseFloat(totalPAndL) + parseFloat(ordersPAndL);
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/profile', {
+          withCredentials : true
+        });
+        setUsername(response.data.username);
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+      }
+    };
+
+    fetchProfile();
+  },[]);
 
   return (
     <>
       <div className="username">
-        <h6>Hi, User!</h6>
+        <span><p style={{fontSize : "1.5rem"}}>Hey {username}...!</p></span>
         <hr className="divider" />
       </div>
 
@@ -30,8 +44,7 @@ const Summary = () => {
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
-              }).format(combinedLTP)}
-              {console.log(combinedLTP)}
+              }).format(totalLTP)}
             </h3>
             <p>Margin available</p>
           </div>
@@ -51,7 +64,7 @@ const Summary = () => {
 
       <div className="section">
         <span>
-          <p>Holdings (13)</p>
+          <p>Holdings ({lengthHolding})</p>
         </span>
 
         <div className="data">
@@ -60,8 +73,7 @@ const Summary = () => {
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
-              }).format(combinedPAndL)}{" "}
-              {console.log(combinedPAndL)}
+              }).format(totalPAndL)}{" "}
               <small>+5.20%</small>{" "}
             </h3>
             <p>P&L</p>
@@ -75,7 +87,7 @@ const Summary = () => {
                 {new Intl.NumberFormat("en-IN", {
                   style: "currency",
                   currency: "INR",
-                }).format(combinedLTP)}
+                }).format(totalLTP)}
               </span>{" "}
             </p>
             <p>
@@ -84,7 +96,7 @@ const Summary = () => {
                 {new Intl.NumberFormat("en-IN", {
                   style: "currency",
                   currency: "INR",
-                }).format(combinedAvg)}
+                }).format(totalAvgPrice)}
               </span>{" "}
             </p>
           </div>

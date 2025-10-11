@@ -1,6 +1,43 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import "./BuyActionWindow.css";
+import GeneralContext from "./GeneralContext";
 
-function SellActionWindow() {
+function SellActionWindow({ uid, fetchHoldings }) {
+  const [stockQuantity, setStockQuantity] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const { triggerHoldingsRefresh, closeSellWindow } =
+    useContext(GeneralContext);
+
+  const handleSellClick = async () => {
+    setLoading(true);
+    try {
+      await axios.post(
+        "http://localhost:8080/sell",
+        {
+          name: uid,
+          qty: Number(stockQuantity),
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      alert(`Sold ${stockQuantity} share(s) of ${uid}`);
+      console.log("Triggering holdings refresh");
+      triggerHoldingsRefresh();
+      closeSellWindow(); 
+    } catch (err) {
+      console.error("Sell failed:", err);
+      alert("Sell failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelClick = () => {
+    closeSellWindow();
+  };
 
   return (
     <div className="container" id="buy-window" draggable="true">
@@ -12,33 +49,26 @@ function SellActionWindow() {
               type="number"
               name="qty"
               id="qty"
+              min="1"
               onChange={(e) => setStockQuantity(e.target.value)}
               value={stockQuantity}
-            />
-          </fieldset>
-          <fieldset>
-            <legend>Price</legend>
-            <input
-              type="number"
-              name="price"
-              id="price"
-              step="0.05"
-              onChange={(e) => setStockPrice(e.target.value)}
-              value={stockPrice}
             />
           </fieldset>
         </div>
       </div>
 
       <div className="buttons">
-        <span>Margin required ₹140.65</span>
         <div>
-          <Link className="btn btn-blue" onClick={handleBuyClick}>
-            Buy
-          </Link>
-          <Link to="" className="btn btn-grey" onClick={handleCancelClick}>
+          <button
+            className="btn btn-blue"
+            onClick={handleSellClick}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Sell"}
+          </button>
+          <button className="btn btn-grey" onClick={handleCancelClick}>
             Cancel
-          </Link>
+          </button>
         </div>
       </div>
     </div>

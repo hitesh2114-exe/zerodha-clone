@@ -1,28 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import GeneralContext from "./GeneralContext";
 import axios from "axios";
 import "./BuyActionWindow.css";
 
-const BuyActionWindow = ({ uid }) => {
+const BuyActionWindow = ({ uid}) => {
+  const [stockQuantity, setStockQuantity] = useState(1);
+  const [stockPrice, setStockPrice] = useState(0.0);
+  const {
+    triggerHoldingsRefresh,
+    closeBuyWindow
+  } = useContext(GeneralContext);
 
-  const [ stockQuantity,setStockQuantity ] = useState(1);
-  const [ stockPrice,setStockPrice ] = useState(0.0);
 
-  const handleBuyClick = () => {
-    axios.post('https://zerodha-clone-3-t58v.onrender.com/newOrder', {
-        name : uid,
-        qty : stockQuantity,
-        price : stockPrice,
-        mode : "BUY"
-    });
-
-    GeneralContext.closeBuyWindow();
+  const handleBuyClick = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8080/buy",
+        {
+          name: uid,
+          qty: Number(stockQuantity),
+          price: Number(stockPrice),
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      alert(`Purchased ${stockQuantity} share(s) of ${uid}`);
+      console.log("Triggering holdings refresh");
+      triggerHoldingsRefresh();
+      closeBuyWindow();
+    } catch (err) {
+      console.error("Buy failed:", err);
+      alert("Purchase failed. Please try again.");
+    }
   };
 
   const handleCancelClick = () => {
-    GeneralContext.closeBuyWindow();
+    closeBuyWindow(); 
   };
 
   return (
