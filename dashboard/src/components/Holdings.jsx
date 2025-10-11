@@ -11,7 +11,7 @@ const Holdings = () => {
   useEffect(() => {
     const fetchHoldings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/holdings", {
+        const response = await axios.get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
           withCredentials: true,
         });
         setHoldings(response.data.holdings);
@@ -26,7 +26,7 @@ const Holdings = () => {
     // Refresh on trigger change
     const fetchHoldings = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/holdings", {
+        const response = await axios.get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
           withCredentials: true,
         });
         setHoldings(response.data.holdings);

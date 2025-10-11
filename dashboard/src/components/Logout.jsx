@@ -6,14 +6,14 @@ function Logout() {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:8080/logout",
+        "https://zerodha-clone-3-t58v.onrender.com/logout",
         {},
         {
           withCredentials: true,
         }
       );
       alert("Logout successful");
-      window.location.href = "http://localhost:5173";
+      window.location.href = "https://zerodha-clone-4-mk1z.onrender.com";
     } catch (err) {
       console.error("Logout error:", err);
       alert("Logout failed");

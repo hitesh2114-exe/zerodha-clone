@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["https://zerodha-clone-4-mk1z.onrender.com", "https://zerodha-clone-5-aris.onrender.com"],
     credentials: true,
   })
 );

@@ -1,46 +1,36 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
+
 
 function Login() {
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
+    username: '',
+    password: ''
   });
-  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const [message, setMessage] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setError('');
     try {
-      const res = await axios.post(
-        "https://zerodha-clone-3-t58v.onrender.com/login",
-        formData
-        // { withCredentials: true }
-      );
-      console.log("Login response:", res.data);
-      if (res.status === 200) {
-        const token = res.data.token;
-        localStorage.setItem("authToken", token);
-        window.location.href = "https://zerodha-clone-5-aris.onrender.com";
-      }
-      setFormData({ username: "", password: "" });
-    } catch (e) {
-      console.log("Login error:", e.response?.data || e.message);
-      if (e.response && e.response.status === 401) {
-        setMessage("Invalid Credentials");
-      } else {
-        setMessage("Something went wrong. Please try again.");
-      }
+      const response = await axios.post("https://zerodha-clone-3-t58v.onrender.com/login", formData, {
+        withCredentials : true
+      });
+      alert(response.data.message); // "Login successful"
+      window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
+
+    } catch(err) {
+      setError(err.response?.data?.message || 'Login failed');
     }
-    setLoading(false);
-  };
+  }
 
   return (
     <div className="container" style={{ marginTop: "5rem" }}>
@@ -84,35 +74,11 @@ function Login() {
                   onChange={handleChange}
                 />
               </div>
-
-              {/* <input
-                className="Login-element"
-                name="username"
-                type="text"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-              /> */}
-              {/* <input
-                className="Login-element"
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              /> */}
               <button type="submit" className="btn btn-outline-primary">
                 Sign in
               </button>
-              {/* <button type="submit">sign in</button> */}
             </form>
-            {message && (
-              <div className="alert alert-danger mt-3" role="alert">
-                {message}
-              </div>
-            )}
-
-            {loading && <p>Loading...</p>}
+            {error && <p className="error">{error}</p>}
           </div>
         </div>
       </div>

@@ -5,38 +5,28 @@ import { Link } from "react-router-dom";
 import "./SignUpNow.css";
 
 function SignUpNow() {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
+    const [ formData, setFormData ] = useState({
+      username : '',
+      email : '',
+      password : ''
+    });
 
-  const [message, setMessage] = useState("");
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name] : e.target.value });
+    };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(
-        "https://zerodha-clone-3-t58v.onrender.com/signup",
-        formData
-      );
-      const token = res.data.token;
-      localStorage.setItem("authToken", token);
-      window.location.href = "https://zerodha-clone-5-aris.onrender.com";
-      setFormData({ username: "", email: "", password: "" });
-    } catch (error) {
-      if (error.response && error.response.status === 409) {
-        setMessage("User already exists. Try logging in.");
-      } else {
-        setMessage("Registration failed. Please try again.");
+    const handleEvent = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await axios.post('https://zerodha-clone-3-t58v.onrender.com/signup', formData, {
+          withCredentials : true
+        } );
+        alert(response.data.message); 
+      } catch (err) {
+        alert(err.response?.data?.message || 'Signup failed');
       }
-    }
-  };
-
+    };
+  
   return (
     <div className="container">
       <div className="row">
@@ -51,7 +41,7 @@ function SignUpNow() {
           <h2 style={{ paddingLeft: "5rem", fontSize: "1.7rem" }}>
             Signup now
           </h2>
-          <form onSubmit={handleSubmit} className="SUN">
+          <form onSubmit={handleEvent} className="SUN">
             <div class="input-group mb-3 SUN-comp">
               <span class="input-group-text" id="basic-addon1">
                 @
@@ -94,37 +84,10 @@ function SignUpNow() {
               />
             </div>
 
-            {/* <input
-              className="SUN-comp"
-              name="username"
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={handleChange}
-            /> */}
-            {/* <input
-              className="SUN-comp"
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-            /> */}
-            {/* <input
-              className="SUN-comp"
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            /> */}
             <button className="btn btn-outline-primary" type="submit">
               Register
             </button>
           </form>
-          {message && (
-            <p style={{ marginTop: "10px", marginLeft: "5rem" }}>{message}</p>
-          )}
         </div>
       </div>
 

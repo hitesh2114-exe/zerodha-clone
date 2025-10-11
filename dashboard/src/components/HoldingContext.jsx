@@ -15,7 +15,7 @@ export const HoldingProvider = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/holdings", { withCredentials: true })
+      .get("https://zerodha-clone-3-t58v.onrender.com/holdings", { withCredentials: true })
       .then((res) => setHoldings(res.data.holdings || []))
       .catch((err) => console.error("Fetch error:", err));
   }, [refreshTrigger]);
