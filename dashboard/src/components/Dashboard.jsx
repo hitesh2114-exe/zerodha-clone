@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+
+import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
 import { HoldingProvider } from "./HoldingContext";
@@ -11,6 +13,18 @@ import { GeneralContextProvider } from "./GeneralContext";
 import Logout from "./Logout";
 
 const Dashboard = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tokenFromURL = params.get("token");
+
+    if (tokenFromURL) {
+      localStorage.setItem("token", tokenFromURL); 
+      window.history.replaceState({}, "", location.pathname); 
+    }
+  }, [location]);
+
   return (
     <div className="dashboard-container">
       <GeneralContextProvider>

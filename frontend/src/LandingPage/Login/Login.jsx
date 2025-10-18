@@ -3,14 +3,13 @@ import axios from "axios";
 import "./Login.css";
 import { useNavigate } from "react-router-dom";
 
-
 function Login() {
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,18 +18,29 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    try {
-      const response = await axios.post("https://zerodha-clone-3-t58v.onrender.com/login", formData, {
-        withCredentials : true
-      });
-      alert(response.data.message); // "Login successful"
-      window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
+    setError("");
 
-    } catch(err) {
-      setError(err.response?.data?.message || 'Login failed');
-    }
-  }
+    axios
+      .post("https://zerodha-clone-3-t58v.onrender.com/login", formData)
+      .then((response) => {
+        const token = response.data.token;
+        window.location.href = `https://zerodha-clone-5-aris.onrender.com/?token=${token}`;
+      })
+      .catch((error) => {
+        console.error("Login failed", error);
+      });
+
+    // try {
+    //   const response = await axios.post("http://localhost:8080/login", formData, {
+    //     withCredentials : true
+    //   });
+    //   alert(response.data.message); // "Login successful"
+    //   window.location.href = 'http://localhost:5174';
+
+    // } catch(err) {
+    //   setError(err.response?.data?.message || 'Login failed');
+    // }
+  };
 
   return (
     <div className="container" style={{ marginTop: "5rem" }}>

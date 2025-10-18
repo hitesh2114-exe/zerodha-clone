@@ -12,7 +12,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { UserModel } = require("./models/UserModel.js");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.JWT_SECRET;
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 
@@ -24,23 +23,12 @@ mongoose.connect(uri).then(() => console.log("Connected!"));
 
 app.use(cookieParser());
 app.use(express.json());
-
-const allowedOrigins = [
-  "https://zerodha-clone-4-mk1z.onrender.com",
-  "https://zerodha-clone-5-aris.onrender.com"
-];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
-
+app.use(
+  cors({
+    origin: ["https://zerodha-clone-4-mk1z.onrender.com", "https://zerodha-clone-5-aris.onrender.com"],
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
@@ -247,7 +235,11 @@ app.post("/signup", async (req, res) => {
 
     //save the user
     await newUser.save();
-    res.status(201).json({ message: "Signup successful" });
+    // Create JWT
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.status(201).json({ message: "Signup successful" , token});
   } catch (err) {
     console.error("Signup error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -278,15 +270,7 @@ app.post("/login", async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    //set token as http-only cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, // true in production with HTTPS
-      sameSite: "None",
-      maxAge: 3600000,
-    });
-
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ message: "Login successful", token });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -295,24 +279,23 @@ app.post("/login", async (req, res) => {
 
 //logout route
 app.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-  });
   res.status(200).json({ message: "Logout successful" });
 });
 
 //profile checking route
 app.get("/profile", async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing token" });
   }
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     res.status(200).json({ username: user.username });
   } catch (err) {
     res.status(401).json({ message: "Invalid token" });
@@ -341,8 +324,12 @@ function simulateDayChange(price) {
 
 app.post("/buy", async (req, res) => {
   const { name, qty, price } = req.body;
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing token" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -378,8 +365,13 @@ app.post("/buy", async (req, res) => {
 //sell stocks
 app.post("/sell", async (req, res) => {
   const { name, qty } = req.body;
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing token" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -402,17 +394,26 @@ app.post("/sell", async (req, res) => {
   }
 });
 
-//route to access all holdings
 app.get("/holdings", async (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing token" });
+  }
+
+  const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await UserModel.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     res.status(200).json({ holdings: user.holdings });
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch holdings" });
+    console.error("Token verification failed:", err);
+    res.status(403).json({ message: "Invalid or expired token" });
   }
 });
 

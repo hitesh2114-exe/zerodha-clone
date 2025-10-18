@@ -6,37 +6,30 @@ import GeneralContext from "./GeneralContext";
 
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
-  const { refreshHoldingsTrigger } = useContext(GeneralContext);
+  // const { refreshHoldingsTrigger } = useContext(GeneralContext);
 
   useEffect(() => {
-    const fetchHoldings = async () => {
-      try {
-        const response = await axios.get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
-          withCredentials: true,
-        });
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // setError("No token found. Please log in.");
+      // setLoading(false);
+      return;
+    }
+
+    axios
+      .get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
         setHoldings(response.data.holdings);
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error("Error fetching holdings:", err);
-      }
-    };
-    fetchHoldings();
+      });
   }, []);
-
-  useEffect(() => {
-    // Refresh on trigger change
-    const fetchHoldings = async () => {
-      try {
-        const response = await axios.get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
-          withCredentials: true,
-        });
-        setHoldings(response.data.holdings);
-      } catch (err) {
-        console.error("Error refreshing holdings:", err);
-      }
-    };
-    console.log("Refresh trigger changed:", refreshHoldingsTrigger);
-    fetchHoldings();
-  }, [refreshHoldingsTrigger]);
 
   const totalAvgPrice = holdings.length
     ? holdings

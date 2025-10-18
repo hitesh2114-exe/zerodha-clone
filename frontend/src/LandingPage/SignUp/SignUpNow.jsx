@@ -5,28 +5,35 @@ import { Link } from "react-router-dom";
 import "./SignUpNow.css";
 
 function SignUpNow() {
-    const [ formData, setFormData ] = useState({
-      username : '',
-      email : '',
-      password : ''
-    });
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
-    const handleChange = (e) => {
-      setFormData({ ...formData, [e.target.name] : e.target.value });
-    };
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const handleEvent = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.post('https://zerodha-clone-3-t58v.onrender.com/signup', formData, {
-          withCredentials : true
-        } );
-        alert(response.data.message); 
-      } catch (err) {
-        alert(err.response?.data?.message || 'Signup failed');
+  const handleEvent = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "https://zerodha-clone-3-t58v.onrender.com/signup",
+        formData
+      );
+      const token = response.data?.token;
+      if (!token) {
+        alert("Signup succeeded but no token received.");
+        return;
       }
-    };
-  
+      localStorage.setItem("token", token); 
+      window.location.href = `https://zerodha-clone-5-aris.onrender.com/?token=${token}`;
+    } catch (err) {
+      alert(err.response?.data?.message || "Signup failed");
+    }
+  };
+
   return (
     <div className="container">
       <div className="row">
