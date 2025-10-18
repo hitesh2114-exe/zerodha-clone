@@ -25,7 +25,7 @@ function Login() {
         withCredentials : true
       });
       alert(response.data.message); // "Login successful"
-      // window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
+      window.location.href = 'https://zerodha-clone-5-aris.onrender.com';
 
     } catch(err) {
       setError(err.response?.data?.message || 'Login failed');
