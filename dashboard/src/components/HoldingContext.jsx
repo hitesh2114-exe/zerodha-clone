@@ -12,8 +12,6 @@ export const HoldingProvider = ({ children }) => {
   const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-  const lengthHolding = holdings.length;
-
   // useEffect(() => {
   //   axios
   //     .get("http://localhost:8080/holdings", { withCredentials: true })
@@ -42,6 +40,8 @@ export const HoldingProvider = ({ children }) => {
         console.error("Error fetching holdings:", err);
       });
   }, []);
+
+  const lengthHolding = holdings.length;
 
   //avg price
   useEffect(() => {
