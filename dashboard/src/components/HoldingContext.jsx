@@ -30,7 +30,7 @@ export const HoldingProvider = ({ children }) => {
     }
 
     axios
-      .get("http://localhost:8080/holdings", {
+      .get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
