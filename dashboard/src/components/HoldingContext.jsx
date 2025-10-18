@@ -12,7 +12,7 @@ export const HoldingProvider = ({ children }) => {
   const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-  const lengthHolding = holdings?.length || 0;
+  const lengthHolding = holdings.length;
 
   // useEffect(() => {
   //   axios
