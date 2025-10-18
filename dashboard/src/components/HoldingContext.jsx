@@ -9,16 +9,39 @@ export const HoldingProvider = ({ children }) => {
   const [totalLTP, setTotalLTP] = useState("0.00");
   const [totalPAndL, setTotalPAndL] = useState("0.00");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const lengthHolding = holdings.length;
 
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:8080/holdings", { withCredentials: true })
+  //     .then((res) => setHoldings(res.data.holdings || []))
+  //     .catch((err) => console.error("Fetch error:", err));
+  // }, [refreshTrigger]);
+
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
     axios
-      .get("https://zerodha-clone-3-t58v.onrender.com/holdings", { withCredentials: true })
-      .then((res) => setHoldings(res.data.holdings || []))
-      .catch((err) => console.error("Fetch error:", err));
-  }, [refreshTrigger]);
+      .get("http://localhost:8080/holdings", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setHoldings(response.data.holdings);
+      })
+      .catch((err) => {
+        console.error("Error fetching holdings:", err);
+      });
+  }, []);
 
   //avg price
   useEffect(() => {
@@ -54,7 +77,7 @@ export const HoldingProvider = ({ children }) => {
         totalPAndL,
         totalAvgPrice,
         triggerHoldingsRefresh,
-        lengthHolding
+        lengthHolding,
       }}
     >
       {children}

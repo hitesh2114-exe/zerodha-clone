@@ -5,6 +5,7 @@ import { useEffect } from "react";
 function Logout() {
   const handleLogout = async () => {
     try {
+      localStorage.removeItem("token");
       await axios.post(
         "https://zerodha-clone-3-t58v.onrender.com/logout",
         {},

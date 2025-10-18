@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
-import { HoldingsContext } from "./HoldingContext"
+import { HoldingsContext } from "./HoldingContext";
 import axios from "axios";
 
 const Summary = () => {
@@ -9,27 +9,37 @@ const Summary = () => {
   const { totalAvgPrice } = useContext(HoldingsContext);
   const { lengthHolding } = useContext(HoldingsContext);
 
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get('https://zerodha-clone-3-t58v.onrender.com/profile', {
-          withCredentials : true
-        });
-        setUsername(response.data.username);
-      } catch (err) {
-        console.error('Profile fetch error:', err);
-      }
-    };
+    const token = localStorage.getItem("token");
 
-    fetchProfile();
-  },[]);
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
+    axios
+      .get("http://localhost:8080/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setUsername(response.data.username);
+      })
+      .catch((err) => {
+        console.error("Error fetching username:", err);
+      });
+  }, []);
 
   return (
     <>
       <div className="username">
-        <span><p style={{fontSize : "1.5rem"}}>Hey {username}...!</p></span>
+        <span>
+          <p style={{ fontSize: "1.5rem" }}>Hey {username}...!</p>
+        </span>
         <hr className="divider" />
       </div>
 
