@@ -2,7 +2,6 @@ import React from "react";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { VerticalGraph } from "./VerticalGraph";
-import GeneralContext from "./GeneralContext";
 
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
@@ -56,7 +55,7 @@ const Holdings = () => {
 
   return (
     <>
-      <h3 className="title">Holdings ({holdings.length})</h3>
+      <h3 className="title">Holdings ({holdings.length || 0})</h3>
 
       <div className="order-table">
         <table>
