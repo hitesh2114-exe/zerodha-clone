@@ -12,7 +12,7 @@ export const HoldingProvider = ({ children }) => {
   const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-  const lengthHolding = Array.isArray(holdings) ? holdings.length : 0;
+  const lengthHolding = holdings.length;
 
   // useEffect(() => {
   //   axios
@@ -36,7 +36,7 @@ export const HoldingProvider = ({ children }) => {
         },
       })
       .then((response) => {
-        setHoldings(Array.isArray(response.data?.holdings) ? response.data.holdings : []);
+        setHoldings(response.data.holdings);
       })
       .catch((err) => {
         console.error("Error fetching holdings:", err);

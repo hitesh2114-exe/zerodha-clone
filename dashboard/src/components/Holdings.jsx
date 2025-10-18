@@ -24,7 +24,7 @@ const Holdings = () => {
         },
       })
       .then((response) => {
-        setHoldings(response.data.holdings);
+        setHoldings(Array.isArray(response.data?.holdings) ? response.data.holdings : []);
       })
       .catch((err) => {
         console.error("Error fetching holdings:", err);
