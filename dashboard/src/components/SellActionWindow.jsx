@@ -19,7 +19,9 @@ function SellActionWindow({ uid, fetchHoldings }) {
           qty: Number(stockQuantity),
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 

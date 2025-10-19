@@ -23,7 +23,9 @@ const BuyActionWindow = ({ uid}) => {
           price: Number(stockPrice),
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       alert(`Purchased ${stockQuantity} share(s) of ${uid}`);
