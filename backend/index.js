@@ -406,12 +406,8 @@ app.get("/holdings", async (req, res) => {
     const user = await UserModel.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const holdings = Array.isArray(user.holdings)
-      ? user.holdings.map(h => h.toObject?.() ? h.toObject() : h)
-      : [];
-
-    res.json({ holdings });
-
+    res.json({ holdings: user.holdings || [] });
+    
   } catch (err) {
     res.status(403).json({ message: "Invalid or expired token" });
   }
