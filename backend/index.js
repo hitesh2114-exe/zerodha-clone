@@ -396,6 +396,8 @@ app.post("/sell", async (req, res) => {
 
 app.get("/holdings", async (req, res) => {
   const authHeader = req.headers.authorization;
+
+  // ✅ Check for missing token
   if (!authHeader) {
     return res.status(401).json({ message: "Missing token" });
   }
@@ -403,21 +405,30 @@ app.get("/holdings", async (req, res) => {
   const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
 
   try {
+    // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded token:", decoded);
+    console.log("✅ Decoded token:", decoded);
 
+    // ✅ Fetch user by ID
     const user = await UserModel.findById(decoded.id);
+    console.log("✅ Fetched user:", user);
 
+    // ✅ Handle missing user
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // ✅ Return holdings safely
     res.setHeader("Content-Type", "application/json");
-    res.status(200).json({ holdings: user.holdings || [] });
+    res.status(200).json({
+      holdings: Array.isArray(user.holdings) ? user.holdings : [],
+    });
   } catch (err) {
-    console.error("Token verification failed:", err);
+    console.error("❌ Token verification failed:", err);
     res.status(403).json({ message: "Invalid or expired token" });
   }
 });
+
 
 app.get("/allHoldings", async (req, res) => {
   const allHoldings = await HoldingsModel.find({});
