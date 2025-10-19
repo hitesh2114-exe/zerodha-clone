@@ -408,7 +408,6 @@ app.get("/holdings", async (req, res) => {
     // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("✅ Decoded token:", decoded);
-    console.log("Decoded ID:", decoded.id);
 
     // ✅ Fetch user by ID
     const user = await UserModel.findById(decoded.id);
@@ -419,11 +418,16 @@ app.get("/holdings", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Return holdings safely
+    // ✅ Convert holdings to plain objects (fixes empty array issue)
+    const plainHoldings = Array.isArray(user.holdings)
+      ? user.holdings.map((h) => (h.toObject?.() ? h.toObject() : h))
+      : [];
+
+    console.log("✅ Sending holdings:", plainHoldings);
+
+    // ✅ Send response
     res.setHeader("Content-Type", "application/json");
-    res.status(200).json({
-      holdings: Array.isArray(user.holdings) ? user.holdings : [],
-    });
+    res.status(200).json({ holdings: plainHoldings });
   } catch (err) {
     console.error("❌ Token verification failed:", err);
     res.status(403).json({ message: "Invalid or expired token" });
