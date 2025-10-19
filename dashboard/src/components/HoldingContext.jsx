@@ -16,13 +16,6 @@ export const HoldingProvider = ({ children }) => {
 
   const lengthHolding = Array.isArray(holdings) ? holdings.length : 0;
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:8080/holdings", { withCredentials: true })
-  //     .then((res) => setHoldings(res.data.holdings || []))
-  //     .catch((err) => console.error("Fetch error:", err));
-  // }, [refreshTrigger]);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -42,8 +35,8 @@ export const HoldingProvider = ({ children }) => {
       .catch((err) => {
         console.error("Error fetching holdings:", err);
       });
-  }, [refreshHoldingsTrigger]); // ✅ depends on refreshTrigger
-
+  }, [refreshHoldingsTrigger]); 
+  
   //avg price
   useEffect(() => {
     const total = holdings.length
