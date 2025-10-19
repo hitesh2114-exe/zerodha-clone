@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-
+import Apps from "./Apps";
 import Funds from "./Funds";
 import Holdings from "./Holdings";
 import { HoldingProvider } from "./HoldingContext";

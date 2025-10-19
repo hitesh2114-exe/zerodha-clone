@@ -3,22 +3,10 @@ import axios from "axios";
 import { useEffect } from "react";
 
 function Logout() {
-  const handleLogout = async () => {
-    try {
-      localStorage.removeItem("token");
-      await axios.post(
-        "https://zerodha-clone-3-t58v.onrender.com/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
-      alert("Logout successful");
-      window.location.href = "https://zerodha-clone-4-mk1z.onrender.com";
-    } catch (err) {
-      console.error("Logout error:", err);
-      alert("Logout failed");
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("token"); 
+    alert("Logout successful");
+    window.location.href = "https://zerodha-clone-4-mk1z.onrender.com"; 
   };
 
   return (
