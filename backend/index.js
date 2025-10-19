@@ -25,7 +25,10 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: ["https://zerodha-clone-4-mk1z.onrender.com", "https://zerodha-clone-5-aris.onrender.com"],
+    origin: [
+      "https://zerodha-clone-4-mk1z.onrender.com",
+      "https://zerodha-clone-5-aris.onrender.com",
+    ],
     credentials: true,
   })
 );
@@ -239,7 +242,7 @@ app.post("/signup", async (req, res) => {
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    res.status(201).json({ message: "Signup successful" , token});
+    res.status(201).json({ message: "Signup successful", token });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -395,36 +398,24 @@ app.post("/sell", async (req, res) => {
 });
 
 app.get("/holdings", async (req, res) => {
-  const authHeader = req.headers.authorization;
-
-  // ✅ Check for missing token
-  if (!authHeader) {
-    return res.status(401).json({ message: "Missing token" });
-  }
-
-  const token = authHeader.split(" ")[1]; // Extract token from "Bearer <token>"
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Missing token" });
 
   try {
-    // ✅ Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("✅ Decoded token:", decoded);
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // ✅ Fetch user by ID
-    const user = await UserModel.findById(decoded.id);
-    console.log("✅ Fetched user:", user);
+    const holdings = Array.isArray(user.holdings)
+      ? user.holdings.map(h => h.toObject?.() ? h.toObject() : h)
+      : [];
 
-    // ✅ Handle missing user
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    res.json({ holdings });
 
-    res.status(200).json({ holdings: user.holdings });
   } catch (err) {
-    console.error("❌ Token verification failed:", err);
     res.status(403).json({ message: "Invalid or expired token" });
   }
 });
-
 
 app.get("/allHoldings", async (req, res) => {
   const allHoldings = await HoldingsModel.find({});
