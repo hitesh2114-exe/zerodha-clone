@@ -48,7 +48,7 @@ export const HoldingProvider = ({ children }) => {
         console.error("Error fetching holdings:", err);
         setHoldings([]);
       });
-  });
+  },[]);
 
   //avg price
   useEffect(() => {
