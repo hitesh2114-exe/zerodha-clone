@@ -82,7 +82,7 @@ const Summary = () => {
 
         <div className="data">
           <div className="first">
-            <h3 className="profit">
+            <h3 className="profit" style={{color: totalPAndL > 0 ? "red" : "green"}}>
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
