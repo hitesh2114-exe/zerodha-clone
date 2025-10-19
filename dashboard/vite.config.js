@@ -5,7 +5,8 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist', // ✅ default for Vite, Render expects this
+    outDir: 'dist',
+    sourcemap: true, // ✅ default for Vite, Render expects this
   },
   resolve: {
     alias: {

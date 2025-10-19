@@ -12,7 +12,7 @@ export const HoldingProvider = ({ children }) => {
   const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
-  const lengthHolding = holdings.length;
+  const lengthHolding = Array.isArray(holdings) ? holdings.length : 0;
 
   // useEffect(() => {
   //   axios
@@ -36,12 +36,19 @@ export const HoldingProvider = ({ children }) => {
         },
       })
       .then((response) => {
-        setHoldings(response.data.holdings);
+        const data = response.data;
+        if (Array.isArray(data?.holdings)) {
+          setHoldings(data.holdings);
+        } else {
+          console.warn("Unexpected holdings format:", data);
+          setHoldings([]);
+        }
       })
       .catch((err) => {
         console.error("Error fetching holdings:", err);
+        setHoldings([]);
       });
-  }, []);
+  });
 
   //avg price
   useEffect(() => {
