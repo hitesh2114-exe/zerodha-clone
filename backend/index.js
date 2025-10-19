@@ -418,16 +418,7 @@ app.get("/holdings", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ Convert holdings to plain objects (fixes empty array issue)
-    const plainHoldings = Array.isArray(user.holdings)
-      ? user.holdings.map((h) => (h.toObject?.() ? h.toObject() : h))
-      : [];
-
-    console.log("✅ Sending holdings:", plainHoldings);
-
-    // ✅ Send response
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).json({ holdings: plainHoldings });
+    res.status(200).json({ holdings: user.holdings });
   } catch (err) {
     console.error("❌ Token verification failed:", err);
     res.status(403).json({ message: "Invalid or expired token" });
