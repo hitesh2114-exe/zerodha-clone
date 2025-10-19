@@ -11,6 +11,20 @@ function SellActionWindow({ uid, fetchHoldings }) {
 
   const handleSellClick = async () => {
     setLoading(true);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("No token found. Please log in.");
+      setLoading(false);
+      return;
+    }
+
+    if (!stockQuantity || stockQuantity <= 0) {
+      alert("Please enter a valid quantity.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await axios.post(
         "https://zerodha-clone-3-t58v.onrender.com/sell",
@@ -28,7 +42,7 @@ function SellActionWindow({ uid, fetchHoldings }) {
       alert(`Sold ${stockQuantity} share(s) of ${uid}`);
       console.log("Triggering holdings refresh");
       triggerHoldingsRefresh();
-      closeSellWindow(); 
+      closeSellWindow();
     } catch (err) {
       console.error("Sell failed:", err);
       alert("Sell failed. Please try again.");

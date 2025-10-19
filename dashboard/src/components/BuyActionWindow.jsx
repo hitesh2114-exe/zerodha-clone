@@ -14,6 +14,23 @@ const BuyActionWindow = ({ uid}) => {
 
 
   const handleBuyClick = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("No token found. Please log in.");
+      return;
+    }
+
+    if (
+      !stockQuantity ||
+      stockQuantity <= 0 ||
+      !stockPrice ||
+      stockPrice <= 0
+    ) {
+      alert("Please enter valid quantity and price.");
+      return;
+    }
+
     try {
       await axios.post(
         "https://zerodha-clone-3-t58v.onrender.com/buy",
