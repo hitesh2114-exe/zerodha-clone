@@ -6,16 +6,10 @@ import { VerticalGraph } from "./VerticalGraph";
 
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
-  // const { refreshHoldingsTrigger } = useContext(GeneralContext);
+  const { refreshHoldingsTrigger } = useContext(GeneralContext);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      // setError("No token found. Please log in.");
-      // setLoading(false);
-      return;
-    }
 
     axios
       .get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
@@ -29,7 +23,7 @@ const Holdings = () => {
       .catch((err) => {
         console.error("Error fetching holdings:", err);
       });
-  }, []);
+  }, [refreshHoldingsTrigger]);
 
   const totalAvgPrice = holdings.length
     ? holdings
