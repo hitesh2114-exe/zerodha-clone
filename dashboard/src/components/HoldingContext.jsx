@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
 export const HoldingsContext = createContext();
+import GeneralContext from "./GeneralContext";
 
 export const HoldingProvider = ({ children }) => {
   const [holdings, setHoldings] = useState([]);
@@ -11,6 +12,7 @@ export const HoldingProvider = ({ children }) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [error, setError] = useState([]);
   const triggerHoldingsRefresh = () => setRefreshTrigger((prev) => prev + 1);
+  const { refreshHoldingsTrigger } = useContext(GeneralContext);
 
   const lengthHolding = Array.isArray(holdings) ? holdings.length : 0;
 
@@ -40,7 +42,7 @@ export const HoldingProvider = ({ children }) => {
       .catch((err) => {
         console.error("Error fetching holdings:", err);
       });
-  }, [refreshTrigger]); // ✅ depends on refreshTrigger
+  }, [refreshHoldingsTrigger]); // ✅ depends on refreshTrigger
 
   //avg price
   useEffect(() => {
