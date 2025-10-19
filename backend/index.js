@@ -408,6 +408,7 @@ app.get("/holdings", async (req, res) => {
     // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("✅ Decoded token:", decoded);
+    console.log("Decoded ID:", decoded.id);
 
     // ✅ Fetch user by ID
     const user = await UserModel.findById(decoded.id);
