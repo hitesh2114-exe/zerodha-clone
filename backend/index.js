@@ -404,13 +404,15 @@ app.get("/holdings", async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token:", decoded);
+
     const user = await UserModel.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    res.status(200).json({ holdings: user.holdings });
+    res.setHeader("Content-Type", "application/json");
+    res.status(200).json({ holdings: user.holdings || [] });
   } catch (err) {
     console.error("Token verification failed:", err);
     res.status(403).json({ message: "Invalid or expired token" });

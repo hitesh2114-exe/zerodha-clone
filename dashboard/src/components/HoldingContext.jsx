@@ -22,33 +22,29 @@ export const HoldingProvider = ({ children }) => {
   // }, [refreshTrigger]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (!token) {
-      setError("No token found. Please log in.");
-      return;
-    }
+  if (!token) {
+    setError("No token found. Please log in.");
+    return;
+  }
 
-    axios
-      .get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        const data = response.data;
-        if (Array.isArray(data?.holdings)) {
-          setHoldings(data.holdings);
-        } else {
-          console.warn("Unexpected holdings format:", data);
-          setHoldings([]);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching holdings:", err);
-        setHoldings([]);
-      });
-  },[]);
+  axios
+    .get("https://zerodha-clone-3-t58v.onrender.com/holdings", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      console.log("Full response:", response);
+      console.log("Response data:", response.data);
+      setHoldings(Array.isArray(response.data?.holdings) ? response.data.holdings : []);
+    })
+    .catch((err) => {
+      console.error("Error fetching holdings:", err);
+      setHoldings([]); // fallback to empty array to prevent crash
+    });
+}, []);
 
   //avg price
   useEffect(() => {
