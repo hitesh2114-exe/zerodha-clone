@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { HoldingsContext } from "./HoldingContext";
 import axios from "axios";
+import GeneralContext from "./GeneralContext";
 
 const Summary = () => {
   const { totalLTP } = useContext(HoldingsContext);
@@ -11,6 +12,8 @@ const Summary = () => {
 
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+
+  const { refreshHoldingsTrigger } = useContext(GeneralContext);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,7 +35,7 @@ const Summary = () => {
       .catch((err) => {
         console.error("Error fetching username:", err);
       });
-  }, []);
+  }, [refreshHoldingsTrigger]);
 
   return (
     <>
