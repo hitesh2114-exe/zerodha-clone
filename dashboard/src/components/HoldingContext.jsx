@@ -34,6 +34,7 @@ export const HoldingProvider = ({ children }) => {
         },
       })
       .then((response) => {
+        console.log("API response:", response.data);
         setHoldings(response.data.holdings);
       })
       .catch((err) => {
@@ -41,7 +42,7 @@ export const HoldingProvider = ({ children }) => {
       });
   }, []);
 
-  const lengthHolding = holdings.length;
+  const lengthHolding = Array.isArray(holdings) ? holdings.length : 0;
 
   //avg price
   useEffect(() => {
