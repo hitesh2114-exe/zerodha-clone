@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css";
-import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -10,7 +9,6 @@ function Login() {
   });
 
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,17 +27,6 @@ function Login() {
       .catch((error) => {
         console.error("Login failed", error);
       });
-
-    // try {
-    //   const response = await axios.post("http://localhost:8080/login", formData, {
-    //     withCredentials : true
-    //   });
-    //   alert(response.data.message); // "Login successful"
-    //   window.location.href = 'http://localhost:5174';
-
-    // } catch(err) {
-    //   setError(err.response?.data?.message || 'Login failed');
-    // }
   };
 
   return (
