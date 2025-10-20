@@ -5,6 +5,7 @@ import { useEffect } from "react";
 function Logout() {
   const handleLogout = () => {
     localStorage.removeItem("token"); 
+    sessionStorage.removeItem("hasRefreshed");
     alert("Logout successful");
     window.location.href = "https://zerodha-clone-4-mk1z.onrender.com"; 
   };
