@@ -12,6 +12,14 @@ const Summary = () => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+
+    if (!hasRefreshed) {
+      sessionStorage.setItem("hasRefreshed", "true");
+      window.location.reload();
+    }
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -80,9 +88,11 @@ const Summary = () => {
 
         <div className="data">
           <div className="first">
-            <h3 style={{
-              color: totalPAndL > 0 ? "green" : "red",
-            }}>
+            <h3
+              style={{
+                color: totalPAndL > 0 ? "green" : "red",
+              }}
+            >
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
