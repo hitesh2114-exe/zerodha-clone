@@ -6,10 +6,10 @@ import TopBar from "./TopBar";
 const Home = () => {
   return (
     <>
-      <ProtectedRoute>
+      {/* <ProtectedRoute> */}
         <TopBar />
         <Dashboard />
-      </ProtectedRoute>
+      {/* </ProtectedRoute> */}
     </>
   );
 };
